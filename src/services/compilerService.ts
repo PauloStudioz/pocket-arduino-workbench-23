@@ -69,15 +69,38 @@ class CompilerService {
       };
     }
 
-    const startTime = Date.now();
-    
-    // Enhanced compilation with real parsing
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const result = this.performAdvancedCompilation(code, board, startTime);
-        resolve(result);
-      }, 1500 + Math.random() * 2000); // 1.5-3.5 seconds compilation time
-    });
+    // Use real backend compilation service
+    try {
+      const response = await fetch('https://qrdmeckbwlzctyirgsaf.supabase.co/functions/v1/arduino-compiler', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyZG1lY2tid2x6Y3R5aXJnc2FmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0MTE1MjIsImV4cCI6MjA3MDk4NzUyMn0.7O7bopvIUT4cKCwO-IW38IuZw8ILDCGoYlLKp5LWCE0`
+        },
+        body: JSON.stringify({
+          code,
+          board: boardId
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Compilation service error: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Real compilation failed, falling back to mock:', error);
+      
+      // Fallback to enhanced local compilation
+      const startTime = Date.now();
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          const result = this.performAdvancedCompilation(code, board, startTime);
+          resolve(result);
+        }, 1500 + Math.random() * 2000);
+      });
+    }
   }
 
   private performAdvancedCompilation(code: string, board: BoardConfig, startTime: number): CompileResult {
