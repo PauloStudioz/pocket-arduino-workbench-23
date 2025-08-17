@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Arduino IDE Mobile',
   webDir: 'dist',
   server: {
-    url: 'https://a2b62e02-c763-4581-8f81-0425e4c9ddc1.lovableproject.com?forceHideBadge=true',
+    url: 'https://qrdmeckbwlzctyirgsaf.supabase.co',
     cleartext: true
   },
   plugins: {
